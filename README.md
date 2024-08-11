@@ -22,11 +22,12 @@ This script, `run-flux.py`, is an image generation tool that utilizes the Flux P
 ## Installation
 
 1. Clone this repository or download the `run-flux.py` file.
+
 2. Install the required libraries:
 
-   ```
-   pip install replicate requests
-   ```
+```
+pip install replicate requests
+```
 
 3. Ensure you have a Replicate API token. You can obtain one from [Replicate](https://replicate.com/).
 
@@ -34,9 +35,9 @@ This script, `run-flux.py`, is an image generation tool that utilizes the Flux P
 
 1. Run the script:
 
-   ```
-   python run-flux.py
-   ```
+```
+python run-flux.py
+```
 
 2. Follow the prompts to:
    - Enter your Replicate API token
@@ -45,6 +46,27 @@ This script, `run-flux.py`, is an image generation tool that utilizes the Flux P
    - Specify the save directory for generated images
 
 3. The script will generate the image(s) and save them along with the prompts used.
+
+## File Naming Convention
+
+The generated images are saved with a specific naming convention:
+
+```
+[prompt number]-[model]-[seed]-[aspect ratio]-[safety tolerance]-[steps]-[interval]_[suffix]
+```
+
+- `[prompt number]`: User-defined prompt number (e.g., 001)
+- `[model]`: 'fp' for Flux Pro, 'fs' for Flux Schnell
+- `[seed]`: Seed value used for generation
+- `[aspect ratio]`: Formatted aspect ratio (e.g., ar169 for 16:9)
+- `[safety tolerance]`: Safety tolerance value (Flux Pro only)
+- `[steps]`: Number of steps (Flux Pro only)
+- `[interval]`: Interval value (Flux Pro only)
+- `[suffix]`: A three-digit number indicating the image count
+
+Example: `008-fp-12-ar169-5-30-2_004.png`
+
+Note: For Flux Schnell, the safety tolerance, steps, and interval fields will be omitted.
 
 ## Note
 
