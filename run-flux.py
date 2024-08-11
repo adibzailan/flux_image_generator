@@ -58,15 +58,14 @@ def save_prompt_as_md(prompt, filename):
         print(f"Failed to save prompt: {e}")
         logging.error("Failed to save prompt", exc_info=True)
 
-def format_filename(prompt_number, model, seed, aspect_ratio, safety_tolerance, guidance, steps, interval, suffix):
+def format_filename(prompt_number, model, seed, aspect_ratio, safety_tolerance, steps, interval, suffix):
     ar_map = {"1:1": "ar11", "16:9": "ar169", "21:9": "ar219", "2:3": "ar23", "3:2": "ar32", "4:5": "ar45", "5:4": "ar54", "9:16": "ar916", "9:21": "ar921"}
     ar_formatted = ar_map.get(aspect_ratio, "ar11")
     model_short = "fp" if model == "flux-pro" else "fs"
-    safety_formatted = f"s{safety_tolerance * 10}" if safety_tolerance is not None else ""
-    guidance_formatted = f"g{guidance * 10}" if guidance is not None else ""
-    steps_formatted = f"S{steps}" if steps is not None else ""
-    interval_formatted = f"i{interval}" if interval is not None else ""
-    return f"{prompt_number}-{model_short}-{seed}-{ar_formatted}-{safety_formatted}{guidance_formatted}{steps_formatted}{interval_formatted}_{suffix:03}"
+    safety_formatted = f"{safety_tolerance}" if safety_tolerance is not None else ""
+    steps_formatted = f"{steps}" if steps is not None else ""
+    interval_formatted = f"{interval}" if interval is not None else ""
+    return f"{prompt_number}-{model_short}-{seed}-{ar_formatted}-{safety_formatted}-{steps_formatted}-{interval_formatted}_{suffix:03}"
 
 def get_save_directory():
     default_dir = os.path.join(os.path.expanduser("~"), "Desktop")
@@ -104,7 +103,6 @@ def select_model():
 def main():
     REPLICATE_API_TOKEN = get_api_token()
     os.environ["REPLICATE_API_TOKEN"] = REPLICATE_API_TOKEN
-
     save_dir = get_save_directory()
     image_count = 1
     prompt_number = input("Enter a prompt number (e.g., 001): ")
@@ -112,9 +110,8 @@ def main():
     while True:
         model_name, model_id = select_model()
         prompt = input("Please enter your image generation prompt: ")
-        
         input_data = {"prompt": prompt}
-        
+
         if "flux-pro" in model_id:
             seed = get_numeric_input("Enter seed (integer)", 12, 0, 2**32-1)
             guidance = get_numeric_input("Enter guidance value", 3.5, 2, 5)
@@ -122,7 +119,6 @@ def main():
             safety_tolerance = get_numeric_input("Enter safety tolerance", 5, 1, 5)
             steps = get_numeric_input("Enter number of steps", 30, 1, 50)
             interval = get_numeric_input("Enter interval", 2, 1, 4)
-
             input_data.update({
                 "seed": int(seed),
                 "guidance": guidance,
@@ -137,7 +133,6 @@ def main():
             num_outputs = get_numeric_input("Enter number of outputs", 1, 1, 4)
             output_format = input("Enter output format (webp/jpg/png) [default: webp]: ").lower() or "webp"
             output_quality = get_numeric_input("Enter output quality", 80, 0, 100)
-
             input_data.update({
                 "seed": int(seed),
                 "aspect_ratio": aspect_ratio,
@@ -163,12 +158,11 @@ def main():
             if isinstance(output, list):  # Flux Schnell returns a list of URLs
                 for i, url in enumerate(output):
                     if isinstance(url, str) and url.startswith('http'):
-                        filename_base = format_filename(prompt_number, 
+                        filename_base = format_filename(prompt_number,
                                                         "flux-schnell",
-                                                        input_data.get('seed', 0), 
-                                                        input_data.get('aspect_ratio', '1:1'), 
+                                                        input_data.get('seed', 0),
+                                                        input_data.get('aspect_ratio', '1:1'),
                                                         None,  # safety_tolerance not applicable
-                                                        None,  # guidance not applicable
                                                         None,  # steps not applicable
                                                         None,  # interval not applicable
                                                         image_count + i)
@@ -178,14 +172,13 @@ def main():
                 md_filename = os.path.join(save_dir, f"{prompt_number}_{image_count:03}.md")
                 save_prompt_as_md(prompt, md_filename)
             elif isinstance(output, str) and output.startswith('http'):  # Flux Pro returns a single URL
-                filename_base = format_filename(prompt_number, 
+                filename_base = format_filename(prompt_number,
                                                 "flux-pro",
-                                                input_data.get('seed', 0), 
-                                                input_data.get('aspect_ratio', '1:1'), 
-                                                input_data.get('safety_tolerance', 0), 
-                                                input_data.get('guidance', 0), 
-                                                input_data.get('steps', 0), 
-                                                input_data.get('interval', 0), 
+                                                input_data.get('seed', 0),
+                                                input_data.get('aspect_ratio', '1:1'),
+                                                input_data.get('safety_tolerance', 0),
+                                                input_data.get('steps', 0),
+                                                input_data.get('interval', 0),
                                                 image_count)
                 image_filename = os.path.join(save_dir, f"{filename_base}.png")
                 md_filename = os.path.join(save_dir, f"{prompt_number}_{image_count:03}.md")
@@ -198,7 +191,6 @@ def main():
                 logging.error("No valid output was generated", exc_info=True)
 
             print(f"Total images generated: {image_count - 1}")
-
         except Exception as e:
             print(f"\nAn error occurred while generating the image: {str(e)}")
             logging.error("An error occurred while generating the image", exc_info=True)
