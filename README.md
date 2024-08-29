@@ -10,14 +10,18 @@ This script, `run-flux.py`, is an image generation tool that utilizes the Flux P
 - Customizable image generation parameters (e.g., seed, guidance, aspect ratio)
 - Automatic file naming and saving
 - Prompt saving in Markdown format
-- Loading animation during image generation
-- Error logging for troubleshooting
+- Asynchronous operations for improved performance
+- Progress bar for visual feedback during image generation
+- API token caching to avoid repeated input
+- Optimized image saving process
+- Improved error handling and logging
 
 ## Requirements
 
-- Python 3.6+
+- Python 3.7+
 - `replicate` library
-- `requests` library
+- `aiohttp` library
+- `tqdm` library
 
 ## Installation
 
@@ -26,7 +30,7 @@ This script, `run-flux.py`, is an image generation tool that utilizes the Flux P
 2. Install the required libraries:
 
 ```
-pip install replicate requests
+pip install replicate aiohttp tqdm
 ```
 
 3. Ensure you have a Replicate API token. You can obtain one from [Replicate](https://replicate.com/).
@@ -40,7 +44,7 @@ python run-flux.py
 ```
 
 2. Follow the prompts to:
-   - Enter your Replicate API token
+   - Enter your Replicate API token (only required on first run)
    - Choose the model (Flux Pro or Flux Schnell)
    - Enter the image generation parameters
    - Specify the save directory for generated images
@@ -68,9 +72,23 @@ Example: `008-fp-12-ar169-5-30-2_004.png`
 
 Note: For Flux Schnell, the safety tolerance, steps, and interval fields will be omitted.
 
+## Recent Improvements
+
+1. **Asynchronous Operations**: The script now uses `asyncio` and `aiohttp` for asynchronous operations, significantly improving performance when generating and downloading multiple images.
+
+2. **Progress Bar**: A progress bar using the `tqdm` library has been added to provide visual feedback during image generation.
+
+3. **API Token Caching**: The script now caches the API token in a file, eliminating the need to enter it every time the script is run.
+
+4. **Optimized Image Saving**: The image saving process is now asynchronous, allowing for concurrent image downloads when multiple images are generated.
+
+5. **Enhanced Error Handling**: Error handling and logging have been improved for better troubleshooting and stability.
+
+6. **Code Refactoring**: The code has been restructured to be more modular and easier to maintain.
+
 ## Note
 
-This script is intended for educational and personal use. It is not recommended for production environments without further development and error handling.
+This script is intended for educational and personal use. While efforts have been made to improve its performance and reliability, it is not recommended for production environments without further development and testing.
 
 ## License
 
@@ -84,3 +102,4 @@ This project is licensed under the MIT License.
 ## Contributing
 
 While this project is primarily for personal use, suggestions and feedback are welcome. Please open an issue to discuss any proposed changes or improvements.
+
